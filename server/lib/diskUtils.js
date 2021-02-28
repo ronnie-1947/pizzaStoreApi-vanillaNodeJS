@@ -6,6 +6,8 @@
 const fs = require('fs')
 const path = require('path')
 
+const helpers = require('../lib/helpers')
+
 // Create the container
 const lib = {}
 
