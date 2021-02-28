@@ -6,7 +6,7 @@
 const handler = {}
 
 handler.notFound = (data, callback)=>{
-    callback(false,{ping: 'successful'})
+    callback(404 , {msg: 'Not Found'})
 }
 
 handler.ping = (data, callback)=>{

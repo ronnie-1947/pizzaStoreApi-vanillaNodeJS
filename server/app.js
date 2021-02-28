@@ -15,7 +15,7 @@ const app = http.createServer((req, res) => {
     let buffer = ''
 
     req.on('data', data=>{
-        const decoder = new StringDecoder(utf8)
+        const decoder = new StringDecoder('utf8')
         buffer += decoder.write(data)
     })
 
@@ -24,12 +24,12 @@ const app = http.createServer((req, res) => {
         // Get request data
         const data = {
             trimmedPath,
-            method: req.method,
+            method: req.method.toLowerCase(),
             headers: req.headers,
             queryStringObject: parsedUrl.query,
             payload: helpers.parseJsonToObject(buffer)
         }
-
+        
         // Choose the route
         const chosenHandler = typeof (router[trimmedPath]) !== 'undefined' ? router[trimmedPath] : router.notFound
         chosenHandler(data, (statusCode, payload)=>{

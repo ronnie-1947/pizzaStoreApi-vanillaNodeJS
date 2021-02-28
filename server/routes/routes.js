@@ -12,6 +12,8 @@ const routes = {}
 routes.notFound = defaultHandler.notFound
 routes.ping = defaultHandler.ping
 
+routes.users = userHandler.users
+
 module.exports = routes
 
 
