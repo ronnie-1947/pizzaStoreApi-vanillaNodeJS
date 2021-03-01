@@ -23,6 +23,8 @@ handlers.tokens = (data, callback) => {
 handlers._tokens = {}
 
 
+
+
 // Create new token
 handlers._tokens.post = (data, callback) => {
 
@@ -60,7 +62,7 @@ handlers._tokens.post = (data, callback) => {
             expires
         };
     
-        diskUtils.create('tokens', id, tokenObject, (err)=>{
+        diskUtils.create('tokens', tokenId, tokenObject, (err)=>{
             if (err) {
                 callback(500, { Error: 'Could not create token' })
             }
@@ -70,5 +72,30 @@ handlers._tokens.post = (data, callback) => {
     })
 
 }
+
+
+// Verify if a given token id is currently valid for a given user
+handlers._tokens.verifyToken = (id, phone, callback) => {
+
+    // Lookup the token
+    diskUtils.read('tokens', id, (err, tokenData) => {
+
+        if (err || !tokenData) {
+            callback(false)
+            return
+        };  
+        // Token check
+        if (tokenData.phone == phone && tokenData.expires > Date.now()) {
+            callback(true)
+        } else {
+            if (tokenData.expires < Date.now()) {
+                console.log(`New time is ${Date.now() + (1000 * 60 * 60)}`)
+                console.log('Token expired')
+            }
+            callback(false)
+        }
+    })
+}
+
 
 module.exports = handlers;
