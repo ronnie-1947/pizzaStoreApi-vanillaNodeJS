@@ -74,6 +74,86 @@ handlers._tokens.post = (data, callback) => {
 }
 
 
+// Tokens - GET
+handlers._tokens.get = (data, callback) => {
+
+    // Check that the id is valid
+    const id = typeof (data.queryStringObject.id) == 'string' ? data.queryStringObject.id.trim() : false;
+    if (!id) {
+        callback(400, { Error: 'Missing required field' });
+        return;
+    }
+    diskUtils.read('tokens', id, (err, tokenData) => {
+        if (err || !tokenData) {
+            callback(404, { Error: 'tokenData not found' })
+            return
+        }
+
+        callback(200, tokenData)
+    })
+}
+
+
+
+// Renew Token
+handlers._tokens.put = (data, callback) => {
+
+    // Get id from payload
+    const id = typeof (data.payload.id) == 'string' ? data.payload.id.trim() : false;
+    const extend = typeof (data.payload.extend) == 'boolean' && data.payload.extend == true ? true : false;
+
+    if (!id || !extend) {
+        callback(400, { Error: 'invalid required fields' })
+        return
+    }
+
+    // Lookup the token
+    diskUtils.read('tokens', id, (err, tokenData) => {
+
+        if (err || !tokenData) {
+            callback(400, { Error: 'No such token exists' })
+            return
+        }
+
+        // Check if the token is already expired
+        if (tokenData.expires < Date.now()) {
+            callback(400, { Error: 'Your session expired' })
+            return
+        }
+
+        // Set the expiration an hour from now
+        tokenData.expires = Date.now()+1000*60*60;
+
+        // Store the new update
+        diskUtils.update('tokens', id, tokenData, err => {
+            if (err) {
+                callback(500, { Error: 'Could not update the token expiration' })
+                return
+            }
+            callback(200)
+        })
+    })
+}
+
+
+// Tokens - DELETE
+handlers._tokens.delete = (data, callback) => {
+
+    const id = typeof (data.queryStringObject.id) == 'string' ? data.queryStringObject.id.trim() : false;
+    if (!id) {
+        callback(400, { Error: 'Missing required field' });
+        return;
+    }
+    diskUtils.delete('tokens', id, err => {
+        if (err) {
+            callback(500, { Error: 'Error in deleting token' })
+            return
+        }
+        callback(200)
+    })
+}
+
+
 // Verify if a given token id is currently valid for a given user
 handlers._tokens.verifyToken = (id, phone, callback) => {
 
