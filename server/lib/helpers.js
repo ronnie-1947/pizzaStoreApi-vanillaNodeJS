@@ -29,7 +29,7 @@ helpers.encryptString = (str)=>{
 }
 
 
-helpers.createRandomString = (strLength = 10)=>{
+helpers.createRandomString = (strLength = 10)=>{ 
 
     strLength = typeof(strLength)== 'number' && strLength.length >0?strLength:10;
     
