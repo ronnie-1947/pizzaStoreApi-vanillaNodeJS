@@ -23,7 +23,7 @@ handlers.menu = (data, callback) => {
 handlers._users = {};
 
 
-// Post a new user
+// Get cart item
 handlers._users.get = (data, callback) => {
 
     // Get the token in headers
@@ -42,15 +42,12 @@ handlers._users.get = (data, callback) => {
         }
 
         diskUtils.read('users', tokenData.phone, (err, userData)=>{
-
             if(err || !userData){
                 callback(403, { Error: 'You are not authorized' })
                 return
             }
-
             callback(200, {menu: menuItems})
         })
-
     })
 }
 
